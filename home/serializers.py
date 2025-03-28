@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Answer, Question
+from .custom_relational_fields import UserEmailNaneRelationalField
 
 
 class PerosnSerializer(serializers.Serializer) :
@@ -11,6 +12,7 @@ class PerosnSerializer(serializers.Serializer) :
 
 class QuestionSerializer (serializers.ModelSerializer) :
     answers = serializers.SerializerMethodField()
+    user = UserEmailNaneRelationalField(read_only=True)
 
 
     class Meta :
