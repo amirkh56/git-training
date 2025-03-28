@@ -40,7 +40,9 @@ INSTALLED_APPS = [
     'home.apps.HomeConfig',
     'accounts.apps.AccountsConfig',
     'rest_framework',
-    'rest_framework.authtoken',
+    # 'rest_framework.authtoken',
+    'rest_framework_simplejwt',
+    'drf_spectacular'
 ]
 
 MIDDLEWARE = [
@@ -127,11 +129,42 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# REST_Framework
+# REST_Framework Settings
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES' : 
-    [
-            'rest_framework.authentication.TokenAuthentication',           
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        # 'rest_framework.authentication.TokenAuthentication',           
+        'rest_framework_simplejwt.authentication.JWTAuthentication',          
     ],
+
+    'DEFAULT_THROTTLE_CLASSES' : [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+        'rest_framework.throttling.ScopedRateThrottle',
+    ],
+
+    'DEFAULT_THROTTLE_RATES' : {
+        'anon': '3/hour',
+        'user': '10/hour',
+        # 'questions': '5/minute',
+    },
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+
+# Drf-Spactacular Settings
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Git Trainning',
+    'DESCRIPTION': 'For Trainning DRF and Git',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
+
+# Simple JWT Settings
+
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(weeks=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(weeks=4),
 }

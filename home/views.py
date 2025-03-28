@@ -5,10 +5,14 @@ from .serializers import PerosnSerializer, QuestionSerializer, AnswerSerializer
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import status
 from permissions import IsOwnerOrReadOnly
+from rest_framework.throttling import UserRateThrottle, AnonRateThrottle
 
 
 class Home (APIView) :
-    permission_classes = [AllowAny,]
+    permission_classes = [IsAuthenticated,]
+    # throttle_scope = 'questions'
+    serializer_class = PerosnSerializer
+
 
     def get(self, request) :
         person = Person.objects.all()
@@ -19,6 +23,13 @@ class Home (APIView) :
 
 
 class QuestionListView (APIView) :
+    """
+        This Will Show The Questions With Their Answers.
+    """
+
+    throttle_classes = [UserRateThrottle, AnonRateThrottle]
+    serializer_class = QuestionSerializer
+
     def get (self, requset) :
         questions = Question.objects.all()
         ser_data = QuestionSerializer(instance=questions, many = True)
@@ -26,7 +37,12 @@ class QuestionListView (APIView) :
 
 
 class QuestionCreateView (APIView) :
+    """
+        This Is For Creating a Question.
+    """
+
     permission_classes = [IsAuthenticated,]
+    serializer_class = QuestionSerializer
 
     def post (self, request) :
         ser_data = QuestionSerializer(data = request.POST)
@@ -37,7 +53,12 @@ class QuestionCreateView (APIView) :
 
 
 class QuestionUpdateView(APIView) :
+    """
+        This For Updating a Question.
+    """
+
     permission_classes = [IsOwnerOrReadOnly,]
+    serializer_class = QuestionSerializer
 
     def put (self, request, pk) :
         question = Question.objects.get(pk=pk)
@@ -50,9 +71,14 @@ class QuestionUpdateView(APIView) :
 
 
 class QuestionDeleteView (APIView) :
+    """
+        This is For Deleting A Question.
+    """
     permission_classes = [IsOwnerOrReadOnly]
 
     def delete (self, request, pk) :
         question = Question.objects.get(pk=pk)
         question.delete() 
         return Response({'message': 'question deleted.'}, status=status.HTTP_200_OK)
+ 
+
